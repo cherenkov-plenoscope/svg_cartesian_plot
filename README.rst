@@ -11,8 +11,8 @@ Create plots and graphics that you can modify further in e.g. inkscape.
 .. |BlackStyle| image:: https://img.shields.io/badge/code%20style-black-000000.svg
     :target: https://github.com/psf/black
 
-.. |TestStatus| image:: https://github.com/cherenkov-plenoscope/mypackage/actions/workflows/test.yml/badge.svg?branch=main
-   :target: https://github.com/cherenkov-plenoscope/mypackage/actions/workflows/test.yml
+.. |TestStatus| image:: https://github.com/cherenkov-plenoscope/svgplot/actions/workflows/test.yml/badge.svg?branch=main
+   :target: https://github.com/cherenkov-plenoscope/svgplot/actions/workflows/test.yml
 
 .. |PyPiStatus| image:: https://img.shields.io/pypi/v/mypackage
    :target: https://pypi.org/project/mypackage/
