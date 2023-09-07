@@ -1,3 +1,4 @@
+from .version import __version__
 from .base import Fig
 from .base import Ax
 from .base import ax_add_line
