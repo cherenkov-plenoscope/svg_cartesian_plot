@@ -102,9 +102,10 @@ def ax_add_scope(
                 ax=ax,
                 img_x=tPixel,
                 img_distance=img_d,
-                fill=None,
+                fill=(50, 100, 255),
+                fill_opacity=0.5,
                 stroke=(0, 0, 0),
-                stroke_width=5,
+                stroke_width=2.5,
                 stroke_opacity=1.0,
             )
         else:
