@@ -11,7 +11,7 @@ setuptools.setup(
     description="Make plots in scalable vector graphics",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/relleums",
+    url="https://github.com/cherenkov-plenoscope/svgplot",
     install_requires=["svgwrite"],
     classifiers=[
         "Programming Language :: Python :: 3",
