@@ -17,4 +17,4 @@ Create plots and graphics that you can modify further in e.g. inkscape.
 .. |PyPiStatus| image:: https://img.shields.io/pypi/v/mypackage
    :target: https://pypi.org/project/mypackage/
 
-.. |FigTelescope| image:: https://github.com/cherenkov-plenoscope/mypackage/blob/main/mypackage/readme/scope.svg?raw=True
+.. |FigTelescope| image:: https://github.com/cherenkov-plenoscope/svgplot/blob/main/readme/scope.svg?raw=True
