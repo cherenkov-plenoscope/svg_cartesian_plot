@@ -13,7 +13,7 @@ with open(os.path.join("svgplot", "version.py")) as f:
 
 
 setuptools.setup(
-    name="svgplot_sebastian-achim-mueller",
+    name="svgplot",
     version=version,
     author="Sebastian Achim Mueller",
     author_email="sebastian-achim.mueller@mpi-hd.mpg.de",
