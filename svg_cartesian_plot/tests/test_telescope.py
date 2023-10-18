@@ -1,4 +1,4 @@
-import svgplot as splt
+import svg_cartesian_plot as splt
 import numpy as np
 
 

@@ -1,4 +1,4 @@
-import svgplot as splt
+import svg_cartesian_plot as splt
 
 
 def test_example():

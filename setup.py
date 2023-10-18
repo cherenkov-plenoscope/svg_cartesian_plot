@@ -5,7 +5,7 @@ with open("README.rst", "r", encoding="utf-8") as f:
     long_description = f.read()
 
 
-with open(os.path.join("svgplot", "version.py")) as f:
+with open(os.path.join("svg_cartesian_plot", "version.py")) as f:
     txt = f.read()
     last_line = txt.splitlines()[-1]
     version_string = last_line.split()[-1]
@@ -13,18 +13,18 @@ with open(os.path.join("svgplot", "version.py")) as f:
 
 
 setuptools.setup(
-    name="svgplot",
+    name="svg_cartesian_plot",
     version=version,
     author="Sebastian Achim Mueller",
     author_email="sebastian-achim.mueller@mpi-hd.mpg.de",
     description="Make plots in scalable vector graphics",
     long_description=long_description,
     long_description_content_type="text/x-rst",
-    url="https://github.com/cherenkov-plenoscope/svgplot",
+    url="https://github.com/cherenkov-plenoscope/svg_cartesian_plot",
     packages=[
-        "svgplot",
+        "svg_cartesian_plot",
     ],
-    package_data={"svgplot": []},
+    package_data={"svg_cartesian_plot": []},
     install_requires=["svgwrite"],
     classifiers=[
         "Natural Language :: English",
