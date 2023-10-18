@@ -7,7 +7,8 @@ import tempfile
 
 def Dwg(cols=1600, rows=900):
     dwg = svgwrite.Drawing(
-        profile="full", size=("{:d}px".format(cols), "{:d}px".format(rows)),
+        profile="full",
+        size=("{:d}px".format(cols), "{:d}px".format(rows)),
     )
     dwg.viewbox(minx=0, miny=-rows, width=cols, height=rows)
     return dwg

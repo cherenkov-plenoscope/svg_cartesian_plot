@@ -60,7 +60,7 @@ def ax_add_line(ax, xy_start, xy_stop, **kwargs):
         svgcartesian.Line(
             xy_start=_ax2dwg(xy_start, fig=fig, ax=ax),
             xy_stop=_ax2dwg(xy_stop, fig=fig, ax=ax),
-            **kwargs
+            **kwargs,
         )
     )
 

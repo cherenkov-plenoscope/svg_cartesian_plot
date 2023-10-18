@@ -21,10 +21,13 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/cherenkov-plenoscope/svgplot",
-    packages=["svgplot",],
+    packages=[
+        "svgplot",
+    ],
     package_data={"svgplot": []},
     install_requires=["svgwrite"],
     classifiers=[
+        "Natural Language :: English",
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",

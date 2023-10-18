@@ -31,7 +31,10 @@ AX_YLIM = (-0.05 / FIG_RATIO, 1.05 / FIG_RATIO)
 
 
 def ax_add_scope(
-    mirror, sensor, pixels, paxels,
+    mirror,
+    sensor,
+    pixels,
+    paxels,
 ):
     mD = mirror["diameter"]
     mF = mirror["focal_length"]
@@ -129,11 +132,9 @@ def ax_add_scope(
 
 BEAM = [3, 1]
 for deformation in [0.0, MIRROR["focal_length"] * 0.01]:
-
     MIRROR["deformation"]["amplitude"] = deformation
 
     for num_paxel in [5, 1]:
-
         SENSOR["num_paxel"] = num_paxel
 
         fig = splt.Fig(cols=FIG_NUM_COLS, rows=int(FIG_NUM_COLS / FIG_RATIO))
@@ -143,7 +144,10 @@ for deformation in [0.0, MIRROR["focal_length"] * 0.01]:
         ax["ylim"] = AX_YLIM
 
         ax_add_scope(
-            mirror=MIRROR, sensor=SENSOR, pixels=[BEAM[0]], paxels=[BEAM[1]],
+            mirror=MIRROR,
+            sensor=SENSOR,
+            pixels=[BEAM[0]],
+            paxels=[BEAM[1]],
         )
 
         splt.optics.ax_add_optical_axis(
@@ -159,5 +163,7 @@ for deformation in [0.0, MIRROR["focal_length"] * 0.01]:
 
         splt.fig_write(
             fig=fig,
-            path="scope_{:d}-{:d}.svg".format(num_paxel, int(100 * deformation)),
+            path="scope_{:d}-{:d}.svg".format(
+                num_paxel, int(100 * deformation)
+            ),
         )
