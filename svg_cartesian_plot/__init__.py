@@ -7,4 +7,6 @@ from .base import ax_add_text
 from .base import fig_write
 from . import optics
 from . import shapes
+from . import hemisphere
 from . import svgcartesian
+from . import color

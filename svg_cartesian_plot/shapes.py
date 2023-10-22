@@ -49,3 +49,25 @@ def ax_add_hemisphere_grid_text(
             **kwargs,
             text="{: 3.0f}".format(az_deg),
         )
+
+
+def ax_add_hemisphere_mesh(ax, vertices, faces, max_radius=1.0, **kwargs):
+    for face in faces:
+        face_vertices = []
+        for vidx in face:
+            if vidx != -1:
+                vertex_i = vertices[vidx]
+                vertex_i_norm = np.linalg.norm(vertex_i)
+                if vertex_i_norm > max_radius:
+                    vertex_i = vertex_i * max_radius / vertex_i_norm
+
+                face_vertices.append(vertex_i)
+
+        if len(face_vertices) >= 3:
+            face_first_vertex = face_vertices[0]
+            face_vertices.append(face_first_vertex)
+            splt.ax_add_path(
+                ax=ax,
+                xy=face_vertices,
+                **kwargs,
+            )
