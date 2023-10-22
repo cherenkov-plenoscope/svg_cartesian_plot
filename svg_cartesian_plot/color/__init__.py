@@ -1,3 +1,52 @@
+from . import colormap_storage
+import numpy as np
+
+
+class Map:
+    def __init__(self, name, start=0.0, stop=1.0, power=1.0):
+        assert start < stop
+        self.name = name
+        self.start = start
+        self.stop = stop
+        self.power = power
+        self.rgb = getattr(colormap_storage, name)()
+        self.vals = np.linspace(0.0, 1.0, len(self.rgb))
+
+    def __call__(self, val):
+        return self.eval(val=val)
+
+    def eval(self, val):
+        _val = val**self.power
+        _start = self.start**self.power
+        _stop = self.stop**self.power
+        val1 = _compress_zero_to_one(x=_val, x_start=_start, x_stop=_stop)
+
+        rgb_out = np.zeros(3)
+        for c in range(3):
+            rgb_out[c] = np.interp(
+                x=val1,
+                xp=self.vals,
+                fp=self.rgb[:, c],
+            )
+        return rgb_out
+
+    def __repr__(self):
+        out = "{:s}(name={:s}, start={:f}, stop={:f}, power={:f})".format(
+            self.__class__.__name__,
+            self.name,
+            self.start,
+            self.stop,
+            self.power,
+        )
+        return out
+
+
+def _compress_zero_to_one(x, x_start, x_stop):
+    if x >= x_stop:
+        return 1
+    elif x < x_start:
+        return 0
+    return (x - x_start) / (x_stop - x_start)
 
 
 def css(s):
