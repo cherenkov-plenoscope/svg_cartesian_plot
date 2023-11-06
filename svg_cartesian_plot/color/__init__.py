@@ -1,4 +1,5 @@
 from . import colormap_storage
+from .. import base
 import numpy as np
 
 
@@ -28,7 +29,9 @@ class Map:
                 xp=self.vals,
                 fp=self.rgb[:, c],
             )
-        return rgb_out
+
+        rgb8 = (255 * rgb_out).astype(np.uint8)
+        return (int(rgb8[0]), int(rgb8[1]), int(rgb8[2]))
 
     def __repr__(self):
         out = "{:s}(name={:s}, start={:f}, stop={:f}, power={:f})".format(
@@ -39,6 +42,34 @@ class Map:
             self.power,
         )
         return out
+
+
+def ax_add_colormap(ax, colormap, fn=51):
+    ax["xlim"] = [colormap.start, colormap.stop]
+    ax["ylim"] = [0.0, 1.0]
+    xs = np.linspace(colormap.start, colormap.stop, fn + 1)
+    dx = (colormap.stop - colormap.start) / fn
+    for i in range(fn):
+        vs, fs = _rectangle_mesh(xy=[xs[i], 0.0], dx=dx, dy=1.0)
+        xy = [vs[_f] for _f in fs[0]]
+        x_mean = 0.5 * (xs[i] + xs[i + 1])
+        base.ax_add_path(ax=ax, xy=vs, fill=colormap(x_mean), stroke=None)
+
+
+def _rectangle_mesh(xy, dx, dy):
+    x = xy[0]
+    y = xy[1]
+
+    verts = [
+        (x, y),
+        (x + dx, y),
+        (x + dx, y + dy),
+        (x, y + dy),
+    ]
+    faces = [
+        [0, 1, 2, 3, 0],
+    ]
+    return verts, faces
 
 
 def _compress_zero_to_one(x, x_start, x_stop):
