@@ -15,14 +15,14 @@ def ax_add_grid(ax):
     ax_add_grid_lines(
         ax=ax,
         zenith_step_deg=15,
-        azimuth_step_deg=45,
+        azimuth_step_deg=30,
         radius=1.0,
         stroke=color.css("gray"),
     )
     ax_add_grid_text(
         ax=ax,
         zenith_step_deg=15,
-        azimuth_step_deg=45,
+        azimuth_step_deg=30,
         radius=1.0,
         stroke=color.css("black"),
         font_family="math",
@@ -31,7 +31,7 @@ def ax_add_grid(ax):
 
 
 def ax_add_grid_lines(
-    ax, zenith_step_deg=15, azimuth_step_deg=45, radius=1.0, **kwargs
+    ax, zenith_step_deg=15, azimuth_step_deg=30, radius=1.0, **kwargs
 ):
     for zd_deg in np.arange(
         zenith_step_deg, 90 + zenith_step_deg, zenith_step_deg
@@ -51,7 +51,7 @@ def ax_add_grid_lines(
 
 
 def ax_add_grid_text(
-    ax, zenith_step_deg=15, azimuth_step_deg=45, radius=1.0, **kwargs
+    ax, zenith_step_deg=15, azimuth_step_deg=30, radius=1.0, **kwargs
 ):
     for az_deg in np.arange(0, 360, azimuth_step_deg):
         az = np.deg2rad(az_deg)
