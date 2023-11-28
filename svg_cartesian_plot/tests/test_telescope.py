@@ -71,17 +71,17 @@ def ax_add_scope(
                     fill_opacity=0.2,
                     show_beam_scenery_to_mirror=True,
                     show_beam_mirror_to_sensor_plane=True,
-                    show_beam_lens_to_photo_sensor=show_lenses,
+                    show_beam_lens_to_photosensor=show_lenses,
                 )
 
     for tPixel in ePixels:
         for tPaxel in ePaxels:
             if show_lenses:
-                splt.optics.ax_add_light_field_sensor_photo_sensor(
+                splt.optics.ax_add_light_field_sensor_photosensor(
                     ax=ax,
                     img_x=tPixel,
                     img_distance=img_d,
-                    photo_sensor_height=mF * 0.05,
+                    photosensor_height=mF * 0.05,
                     mirror_x=tPaxel,
                     mirror_diameter=mD,
                     mirror_focal_length=mF,
@@ -112,11 +112,11 @@ def ax_add_scope(
                 stroke_opacity=1.0,
             )
         else:
-            splt.optics.ax_add_image_sensor_photo_sensor(
+            splt.optics.ax_add_image_sensor_photosensor(
                 ax=ax,
                 img_x=tPixel,
                 img_distance=img_d,
-                photo_sensor_height=mF * 0.05,
+                photosensor_height=mF * 0.05,
                 fill=COLOR_SENSOR,
                 fill_opacity=1.0,
             )

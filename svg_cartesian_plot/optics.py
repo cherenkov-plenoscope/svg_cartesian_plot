@@ -74,7 +74,7 @@ def ax_add_mirror(
     splt.ax_add_path(ax=ax, xy=mirror_points, **kwargs)
 
 
-def _light_field_sensor_photo_sensor_x(
+def _light_field_sensor_photosensor_x(
     img_x,
     mirror_x,
     mirror_diameter,
@@ -98,7 +98,7 @@ EXAMPLE_SENSOR_CONFIG = {
 }
 
 
-def _light_field_sensor_photo_sensor_distance(
+def _light_field_sensor_photosensor_distance(
     mirror_focal_length,
     mirror_diameter,
     img_x,
@@ -120,7 +120,7 @@ def ax_add_beam(
     mirror_config,
     show_beam_scenery_to_mirror=True,
     show_beam_mirror_to_sensor_plane=True,
-    show_beam_lens_to_photo_sensor=True,
+    show_beam_lens_to_photosensor=True,
     **kwargs,
 ):
     mF = mirror_config["focal_length"]
@@ -192,13 +192,13 @@ def ax_add_beam(
 
     # beam from lens to sensor
     # ------------------------
-    if show_beam_lens_to_photo_sensor:
+    if show_beam_lens_to_photosensor:
         lsbeam_points = []
         lsbeam_points.append((img_x_start, img_distance))
         lsbeam_points.append((img_x_stop, img_distance))
 
-        light_field_sensor_photo_sensor_distance = (
-            _light_field_sensor_photo_sensor_distance(
+        light_field_sensor_photosensor_distance = (
+            _light_field_sensor_photosensor_distance(
                 mirror_focal_length=mirror_config["focal_length"],
                 mirror_diameter=mirror_config["diameter"],
                 img_x=img_x,
@@ -207,19 +207,19 @@ def ax_add_beam(
         )
 
         (
-            photo_sensor_x_start,
-            photo_sensor_x_stop,
-        ) = _light_field_sensor_photo_sensor_x(
+            photosensor_x_start,
+            photosensor_x_stop,
+        ) = _light_field_sensor_photosensor_x(
             img_x=img_x,
             mirror_x=mirror_x,
             mirror_diameter=mirror_config["diameter"],
         )
 
         lsbeam_points.append(
-            (photo_sensor_x_stop, light_field_sensor_photo_sensor_distance)
+            (photosensor_x_stop, light_field_sensor_photosensor_distance)
         )
         lsbeam_points.append(
-            (photo_sensor_x_start, light_field_sensor_photo_sensor_distance)
+            (photosensor_x_start, light_field_sensor_photosensor_distance)
         )
 
         splt.ax_add_path(
@@ -273,7 +273,7 @@ def ax_add_lens_seperator_walls(
     mirror_focal_length,
     **kwargs,
 ):
-    lfs_photo_sensor_distance = _light_field_sensor_photo_sensor_distance(
+    lfs_photosensor_distance = _light_field_sensor_photosensor_distance(
         mirror_focal_length=mirror_focal_length,
         mirror_diameter=mirror_diameter,
         img_x=img_x,
@@ -283,13 +283,13 @@ def ax_add_lens_seperator_walls(
     for l in [0, 1]:
         splt.ax_add_line(
             ax=ax,
-            xy_start=[img_x[l], lfs_photo_sensor_distance],
+            xy_start=[img_x[l], lfs_photosensor_distance],
             xy_stop=[img_x[l], img_distance],
             **kwargs,
         )
 
 
-def make_photo_sensor_xy(width, height):
+def make_photosensor_xy(width, height):
     x = width / 2
     w = width
     h = height
@@ -303,8 +303,8 @@ def make_photo_sensor_xy(width, height):
     return points
 
 
-def ax_add_photo_sensor(ax, T, width, height):
-    xy = make_photo_sensor_xy(width=width, height=height)
+def ax_add_photosensor(ax, T, width, height):
+    xy = make_photosensor_xy(width=width, height=height)
     xy = svgcartesian.transform(xy=xy, T=T)
     splt.ax_add_path(
         ax=ax,
@@ -313,16 +313,16 @@ def ax_add_photo_sensor(ax, T, width, height):
     )
 
 
-def ax_add_image_sensor_photo_sensor(
+def ax_add_image_sensor_photosensor(
     ax,
     img_x,
     img_distance,
-    photo_sensor_height,
+    photosensor_height,
     **kwargs,
 ):
     img_w = img_x[1] - img_x[0]
     img_d = img_distance
-    phsh = photo_sensor_height
+    phsh = photosensor_height
 
     points = []
     points.append((img_x[0], img_d))
@@ -339,32 +339,32 @@ def ax_add_image_sensor_photo_sensor(
     )
 
 
-def ax_add_light_field_sensor_photo_sensor(
+def ax_add_light_field_sensor_photosensor(
     ax,
     img_x,
     img_distance,
-    photo_sensor_height,
+    photosensor_height,
     mirror_x,
     mirror_diameter,
     mirror_focal_length,
     **kwargs,
 ):
-    phs_x = _light_field_sensor_photo_sensor_x(
+    phs_x = _light_field_sensor_photosensor_x(
         img_x=img_x,
         mirror_x=mirror_x,
         mirror_diameter=mirror_diameter,
     )
 
-    lfs_photo_sensor_distance = _light_field_sensor_photo_sensor_distance(
+    lfs_photosensor_distance = _light_field_sensor_photosensor_distance(
         mirror_focal_length=mirror_focal_length,
         mirror_diameter=mirror_diameter,
         img_x=img_x,
         img_distance=img_distance,
     )
 
-    lfs_d = lfs_photo_sensor_distance
+    lfs_d = lfs_photosensor_distance
     phs_w = phs_x[1] - phs_x[0]
-    phsh = photo_sensor_height
+    phsh = photosensor_height
 
     points = []
     points.append((phs_x[0], lfs_d))
