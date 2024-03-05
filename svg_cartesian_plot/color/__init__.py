@@ -1,15 +1,16 @@
 from . import colormap_storage
 from .. import base
+from .. import scaling
 import numpy as np
 
 
 class Map:
-    def __init__(self, name, start=0.0, stop=1.0, power=1.0):
+    def __init__(self, name, start=0.0, stop=1.0, func=scaling.unity()):
         assert start < stop
         self.name = name
         self.start = start
         self.stop = stop
-        self.power = power
+        self.func = func
         self.rgb = getattr(colormap_storage, name)()
         self.vals = np.linspace(0.0, 1.0, len(self.rgb))
 
@@ -17,9 +18,9 @@ class Map:
         return self.eval(val=val)
 
     def eval(self, val):
-        _val = val**self.power
-        _start = self.start**self.power
-        _stop = self.stop**self.power
+        _val = self.func(val)
+        _start = self.func(self.start)
+        _stop = self.func(self.stop)
         val1 = _compress_zero_to_one(x=_val, x_start=_start, x_stop=_stop)
 
         rgb_out = np.zeros(3)
@@ -34,42 +35,96 @@ class Map:
         return (int(rgb8[0]), int(rgb8[1]), int(rgb8[2]))
 
     def __repr__(self):
-        out = "{:s}(name={:s}, start={:f}, stop={:f}, power={:f})".format(
+        out = "{:s}(name={:s}, start={:f}, stop={:f}, func={:s})".format(
             self.__class__.__name__,
             self.name,
             self.start,
             self.stop,
-            self.power,
+            self.func.__name__,
         )
         return out
 
 
-def ax_add_colormap(ax, colormap, fn=51):
-    ax["xlim"] = [colormap.start, colormap.stop]
-    ax["ylim"] = [0.0, 1.0]
-    xs = np.linspace(colormap.start, colormap.stop, fn + 1)
-    dx = (colormap.stop - colormap.start) / fn
-    for i in range(fn):
-        vs, fs = _rectangle_mesh(xy=[xs[i], 0.0], dx=dx, dy=1.0)
-        xy = [vs[_f] for _f in fs[0]]
-        x_mean = 0.5 * (xs[i] + xs[i + 1])
-        base.ax_add_path(ax=ax, xy=vs, fill=colormap(x_mean), stroke=None)
+def ax_add_colormap(ax, colormap, fn=51, orientation="horizontal"):
+    scale = ax["yscale"]
+    ds = np.linspace(
+        scale(colormap.start),
+        scale(colormap.stop),
+        fn + 1,
+    )
+    ds = scale.inverse(ds)
+
+    dd = ds[1:] - ds[:-1]
+
+    if orientation == "horizontal":
+        ax["xlim"] = [colormap.start, colormap.stop]
+        ax["ylim"] = [0.0, 1.0]
+        for i in range(fn):
+            rect_xy = _rectangle_path(xy=[ds[i], 0.0], dx=dd[i], dy=1.0)
+            d_mean = 0.5 * (ds[i] + ds[i + 1])
+            _color = colormap(d_mean)
+            base.ax_add_path(ax=ax, xy=rect_xy, fill=_color, stroke=_color)
+    elif orientation == "vertical":
+        ax["ylim"] = [colormap.start, colormap.stop]
+        ax["xlim"] = [0.0, 1.0]
+        for i in range(fn):
+            rect_xy = _rectangle_path(xy=[0.0, ds[i]], dx=1.0, dy=dd[i])
+            d_mean = 0.5 * (ds[i] + ds[i + 1])
+            _color = colormap(d_mean)
+            base.ax_add_path(ax=ax, xy=rect_xy, fill=_color, stroke=_color)
+    else:
+        raise ValueError("No such orientation '{:s}'.".format(orientation))
 
 
-def _rectangle_mesh(xy, dx, dy):
+def ax_add_colormap_ticks(
+    ax, colormap, num, orientation="horizontal", **kwargs
+):
+    if orientation == "horizontal":
+        raise NotImplementedError("Oops")
+    elif orientation == "vertical":
+        if isinstance(ax["yscale"], scaling.unity):
+            tick_values = list_ticks_in_range_linear(
+                start=colormap.start, stop=colormap.stop
+            )
+            fmt = "{:.1f}"
+            tick_labels = []
+            for i in range(len(tick_values)):
+                tick_labels.append(fmt.format(tick_values[i]))
+        else:
+            tick_values = list_ticks_in_range_log(
+                start=colormap.start, stop=colormap.stop
+            )
+            tick_values = tick_values.astype(float)
+            if len(tick_values) > num:
+                keep = np.arange(0, len(tick_values), len(tick_values) // num)
+                tick_values = tick_values[keep]
+            tick_labels = []
+            for i in range(len(tick_values)):
+                tick_labels.append(
+                    utf8_scientific(
+                        real=tick_values[i], format_template="{:.2e}"
+                    )
+                )
+
+        for i in range(len(tick_values)):
+            base.ax_add_text(
+                ax=ax, xy=[1.1, tick_values[i]], text=tick_labels[i], **kwargs
+            )
+
+    else:
+        raise ValueError("No such orientation '{:s}'.".format(orientation))
+
+
+def _rectangle_path(xy, dx, dy):
     x = xy[0]
     y = xy[1]
-
     verts = [
         (x, y),
         (x + dx, y),
         (x + dx, y + dy),
         (x, y + dy),
     ]
-    faces = [
-        [0, 1, 2, 3, 0],
-    ]
-    return verts, faces
+    return verts
 
 
 def _compress_zero_to_one(x, x_start, x_stop):
@@ -225,3 +280,84 @@ def css(s):
         "yellowgreen": (154, 205, 50),
     }
     return d[s]
+
+
+def next_lower_decade(x):
+    return int(np.floor(np.log10(x)))
+
+
+def next_higher_decade(x):
+    return int(np.ceil(np.log10(x)))
+
+
+def list_ticks_in_range_linear(start, stop, num=10):
+    assert stop >= start
+    span = stop - start
+    step_decade = int(np.floor(np.log10(span)))
+
+    dstart = np.round(start, -step_decade)
+    dstop = np.round(stop, -step_decade)
+    dstep = 10 ** (step_decade - 1)
+    out = np.arange(dstart, dstop + dstep, dstep)
+
+    while len(out) > num:
+        dstep *= 2
+        out = np.arange(dstart, dstop + dstep, dstep)
+
+    return out
+
+
+def list_ticks_in_range_log(start, stop):
+    assert stop >= start
+    lowest_inner_decade = next_higher_decade(start)
+    highest_inner_decade = next_lower_decade(stop)
+    dec_diff = highest_inner_decade - lowest_inner_decade
+    a = 10**lowest_inner_decade
+    b = 10**highest_inner_decade
+    return np.geomspace(a, b, dec_diff + 1)
+
+
+def utf8_scientific(
+    real,
+    format_template="{:e}",
+    nan_template="nan",
+    drop_mantisse_if_one=True,
+):
+    if real != real:
+        return nan_template
+    assert format_template.endswith("e}")
+    s = format_template.format(real)
+
+    mittelpunkt = "\u00B7"
+    pos_e = s.find("e")
+    assert pos_e >= 0
+    mantisse = s[0:pos_e]
+    exponent = str(int(s[pos_e + 1 :]))
+    ten_to_power = "10" + str.join("", [hochgestellt(v) for v in exponent])
+    if drop_mantisse_if_one and float(mantisse) == 1.0:
+        out = ten_to_power
+    else:
+        out = mantisse + mittelpunkt + ten_to_power
+    return out
+
+
+def hochgestellt(v):
+    m = {
+        "-": "\u207B",
+        "+": "\u207A",
+        "0": "\u2070",
+        "1": "\u00B9",
+        "2": "\u00B2",
+        "3": "\u00B3",
+        "4": "\u2074",
+        "5": "\u2075",
+        "6": "\u2076",
+        "7": "\u2077",
+        "8": "\u2078",
+        "9": "\u2079",
+    }
+    return m[v]
+
+
+def circ():
+    return "\u00B0"

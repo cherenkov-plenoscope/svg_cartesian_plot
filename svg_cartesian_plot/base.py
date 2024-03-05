@@ -1,5 +1,6 @@
 import numpy as np
 from . import svgcartesian
+from . import scaling
 
 
 def Fig(cols=1920, rows=1080):
@@ -19,22 +20,31 @@ def Ax(fig):
     a["span"] = (0.1, 0.1, 0.8, 0.8)
     a["xlim"] = (0, 1)
     a["ylim"] = (0, 1)
+    a["xscale"] = scaling.unity()
+    a["yscale"] = scaling.unity()
     fig["axes"].append(a)
     return a
 
 
 def _ax2dwg_point(xy, fig, ax):
-    x = xy[0]
-    y = xy[1]
-    x_range = ax["xlim"][1] - ax["xlim"][0]
-    x_ax_rel = (x - ax["xlim"][0]) / x_range
+    x = ax["xscale"](xy[0])
+    y = ax["yscale"](xy[1])
+
+    xlim0 = ax["xscale"](ax["xlim"][0])
+    xlim1 = ax["xscale"](ax["xlim"][1])
+
+    ylim0 = ax["yscale"](ax["ylim"][0])
+    ylim1 = ax["yscale"](ax["ylim"][1])
+
+    x_range = xlim1 - xlim0
+    x_ax_rel = (x - xlim0) / x_range
 
     x_ax_range = ax["span"][2]
     x_fig_rel = ax["span"][0] + x_ax_range * x_ax_rel
     x_fig = x_fig_rel * fig["fig"]["cols"]
 
-    y_range = ax["ylim"][1] - ax["ylim"][0]
-    y_ax_rel = (y - ax["ylim"][0]) / y_range
+    y_range = ylim1 - ylim0
+    y_ax_rel = (y - ylim0) / y_range
 
     y_ax_range = ax["span"][3]
     y_fig_rel = ax["span"][1] + y_ax_range * y_ax_rel

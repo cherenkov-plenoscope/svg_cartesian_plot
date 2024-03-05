@@ -11,43 +11,89 @@ def Ax(fig):
     return ax
 
 
-def ax_add_grid(ax):
+def ax_add_grid(ax, **kwargs):
+    ax_add_grid_lines_stellarium_style(ax=ax, **kwargs)
+
+    if "stroke" in kwargs:
+        fill = kwargs["stroke"]
+    else:
+        fill = None
+
+    ax_add_ticklabel_text(
+        ax=ax,
+        font_family="math",
+        fill=fill,
+        **kwargs,
+    )
+
+
+def ax_add_grid_lines_stellarium_style(ax, **kwargs):
+    TAU = 2.0 * np.pi
     ax_add_grid_lines(
         ax=ax,
-        zenith_step_deg=15,
-        azimuth_step_deg=30,
-        radius=1.0,
-        stroke=color.css("gray"),
-    )
-    ax_add_grid_text(
-        ax=ax,
-        zenith_step_deg=15,
-        azimuth_step_deg=30,
-        radius=1.0,
-        stroke=color.css("black"),
-        font_family="math",
-        font_size=15,
+        azimuths_rad=np.linspace(0, TAU, 36, endpoint=False),
+        zeniths_rad=np.deg2rad([0, 10, 20, 30, 40, 50, 60, 70, 80, 90]),
+        zenith_min_rad=np.deg2rad(5),
+        **kwargs,
     )
 
 
 def ax_add_grid_lines(
-    ax, zenith_step_deg=15, azimuth_step_deg=30, radius=1.0, **kwargs
+    ax, azimuths_rad, zeniths_rad, zenith_min_rad=0.0, **kwargs
 ):
-    for zd_deg in np.arange(
-        zenith_step_deg, 90 + zenith_step_deg, zenith_step_deg
-    ):
+    zeniths = zeniths_rad
+    zenith_min = zenith_min_rad
+
+    proj_radii = np.sin(zeniths)
+    for i in range(len(zeniths)):
         shapes.ax_add_circle(
             ax=ax,
             xy=[0, 0],
-            radius=radius * np.sin(np.deg2rad(zd_deg)),
+            radius=proj_radii[i],
             **kwargs,
         )
 
-    for az_deg in np.arange(0, 360, azimuth_step_deg):
-        az = np.deg2rad(az_deg)
-        start = radius * np.array([np.cos(az), np.sin(az)])
-        stop = [0, 0]
-        base.ax_add_line(ax=ax, xy_start=start, xy_stop=stop, **kwargs)
+    azimuths = azimuths_rad
+    for a in range(len(azimuths)):
+        for z in range(len(zeniths)):
+            if z == 0:
+                continue
+            zzstart = np.max([zenith_min, zeniths[z - 1]])
+            r_start = np.sin(zzstart)
+            zzstop = np.max([zenith_min, zeniths[z]])
+            r_stop = np.sin(zzstop)
+            start_x = r_start * np.cos(azimuths[a])
+            start_y = r_start * np.sin(azimuths[a])
+            stop_x = r_stop * np.cos(azimuths[a])
+            stop_y = r_stop * np.sin(azimuths[a])
+            base.ax_add_line(
+                ax=ax,
+                xy_start=[start_x, start_y],
+                xy_stop=[stop_x, stop_y],
+                **kwargs,
+            )
+
+
+def ax_add_ticklabel_text(
+    ax,
+    radius=0.9,
+    label_azimuths_rad=[0, 1 / 2 * np.pi, 2 / 2 * np.pi, 3 / 2 * np.pi],
+    label_azimuths=["N", "E", "S", "W"],
+    xshift=-0.0,
+    yshift=-0.0,
+    **kwargs,
+):
+    for i in range(len(label_azimuths_rad)):
+        _az = label_azimuths_rad[i]
+        xs = radius * (np.cos(_az) + xshift)
+        ys = radius * (np.sin(_az) + yshift)
+        base.ax_add_text(
+            ax=ax,
+            xy=1.05 * np.array([xs, ys]),
+            r=90 + np.rad2deg(label_azimuths_rad[i]),
+            **kwargs,
+            text=label_azimuths[i],
+        )
 
 
 def ax_add_grid_text(
@@ -68,12 +114,14 @@ def ax_add_grid_text(
 def init_mesh_look(
     num_faces,
     stroke=color.css("black"),
+    stroke_width=1.0,
     stroke_opacity=1,
     fill=color.css("aqua"),
     fill_opacity=1,
 ):
     out = {}
     out["faces_stroke"] = [stroke for i in range(num_faces)]
+    out["faces_stroke_width"] = [stroke_width for i in range(num_faces)]
     out["faces_stroke_opacity"] = [stroke_opacity for i in range(num_faces)]
     out["faces_fill"] = [fill for i in range(num_faces)]
     out["faces_fill_opacity"] = [fill_opacity for i in range(num_faces)]
@@ -85,6 +133,7 @@ def ax_add_mesh(
     vertices,
     faces,
     faces_stroke=None,
+    faces_stroke_width=None,
     faces_stroke_opacity=None,
     faces_fill=None,
     faces_fill_opacity=None,
@@ -95,6 +144,11 @@ def ax_add_mesh(
         assert len(faces_stroke) == len(faces)
     else:
         faces_stroke = [color.css("black") for i in range(len(faces))]
+
+    if faces_stroke_width:
+        assert len(faces_stroke_width) == len(faces)
+    else:
+        faces_stroke_width = [1.0 for i in range(len(faces))]
 
     if faces_fill:
         assert len(faces_fill) == len(faces)
@@ -130,6 +184,7 @@ def ax_add_mesh(
                 ax=ax,
                 xy=face_vertices,
                 stroke=faces_stroke[fidx],
+                stroke_width=faces_stroke_width[fidx],
                 stroke_opacity=faces_stroke_opacity[fidx],
                 fill=faces_fill[fidx],
                 fill_opacity=faces_fill_opacity[fidx],
