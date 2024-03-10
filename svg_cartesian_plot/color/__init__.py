@@ -1,5 +1,6 @@
 from . import colormap_storage
 from .. import base
+from .. import text
 from .. import scaling
 import numpy as np
 
@@ -101,7 +102,7 @@ def ax_add_colormap_ticks(
             tick_labels = []
             for i in range(len(tick_values)):
                 tick_labels.append(
-                    utf8_scientific(
+                    text.scientific(
                         real=tick_values[i], format_template="{:.2e}"
                     )
                 )
@@ -315,49 +316,3 @@ def list_ticks_in_range_log(start, stop):
     a = 10**lowest_inner_decade
     b = 10**highest_inner_decade
     return np.geomspace(a, b, dec_diff + 1)
-
-
-def utf8_scientific(
-    real,
-    format_template="{:e}",
-    nan_template="nan",
-    drop_mantisse_if_one=True,
-):
-    if real != real:
-        return nan_template
-    assert format_template.endswith("e}")
-    s = format_template.format(real)
-
-    mittelpunkt = "\u00B7"
-    pos_e = s.find("e")
-    assert pos_e >= 0
-    mantisse = s[0:pos_e]
-    exponent = str(int(s[pos_e + 1 :]))
-    ten_to_power = "10" + str.join("", [hochgestellt(v) for v in exponent])
-    if drop_mantisse_if_one and float(mantisse) == 1.0:
-        out = ten_to_power
-    else:
-        out = mantisse + mittelpunkt + ten_to_power
-    return out
-
-
-def hochgestellt(v):
-    m = {
-        "-": "\u207B",
-        "+": "\u207A",
-        "0": "\u2070",
-        "1": "\u00B9",
-        "2": "\u00B2",
-        "3": "\u00B3",
-        "4": "\u2074",
-        "5": "\u2075",
-        "6": "\u2076",
-        "7": "\u2077",
-        "8": "\u2078",
-        "9": "\u2079",
-    }
-    return m[v]
-
-
-def circ():
-    return "\u00B0"

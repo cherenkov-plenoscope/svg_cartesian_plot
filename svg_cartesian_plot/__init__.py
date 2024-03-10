@@ -10,3 +10,4 @@ from . import shapes
 from . import hemisphere
 from . import svgcartesian
 from . import color
+from . import text
