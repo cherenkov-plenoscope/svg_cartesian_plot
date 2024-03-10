@@ -5,9 +5,11 @@ from .base import ax_add_line
 from .base import ax_add_path
 from .base import ax_add_text
 from .base import fig_write
+from .base import ax_add_pcolormesh
 from . import optics
 from . import shapes
 from . import hemisphere
 from . import svgcartesian
 from . import color
 from . import text
+from . import image
