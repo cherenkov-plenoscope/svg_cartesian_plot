@@ -94,17 +94,18 @@ def fig_write(fig, path):
     svgcartesian.write(dwg=fig["dwg"], path=path)
 
 
-def ax_add_pcolormesh(ax, z, colormap, x_bin_edges=None, y_bin_edges=None, **kwargs):
-
+def ax_add_pcolormesh(
+    ax, z, colormap, x_bin_edges=None, y_bin_edges=None, **kwargs
+):
     """
-        (x0, y1)     (x1, y1)
-            +-----------+
-            |           |
-            |           |
-            |           |
-            |           |
-            +-----------+
-        (x0, y0)     (x1, y0)
+    (x0, y1)     (x1, y1)
+        +-----------+
+        |           |
+        |           |
+        |           |
+        |           |
+        +-----------+
+    (x0, y0)     (x1, y0)
     """
 
     z = np.asarray(z)

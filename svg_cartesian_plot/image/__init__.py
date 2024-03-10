@@ -3,6 +3,7 @@ import tempfile
 import os
 import base64
 
+
 def image_to_png_base64(mat):
     assert len(mat.shape) == 3
     assert mat.shape[2] == 3
