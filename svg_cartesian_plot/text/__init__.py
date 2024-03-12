@@ -38,7 +38,7 @@ def superscript(v):
     }
     out = ""
     for c in v:
-        out += m[v]
+        out += m[c]
     return out
 
 
