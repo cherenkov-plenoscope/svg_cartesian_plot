@@ -124,20 +124,31 @@ def ax_add_pcolormesh(
         for ybin in range(num_y):
             mat[xbin, num_y - ybin - 1] = colormap(z[xbin, ybin])
 
-    mat64_str = image.image_to_png_base64(mat=mat)
+    ax_embed_image_from_raw(ax=ax, raw_image_rgb=mat)
 
+
+def ax_embed_image_from_raw(ax, raw_image_rgb):
+    mat64_str = image.image_to_png_base64(mat=raw_image_rgb)
+    href = "data:image/png;base64," + mat64_str
+    ax_link_image(ax=ax, href=href)
+
+
+def ax_link_image(ax, href, span=(0, 0, 1, 1)):
     fig = ax["fig"]
     dwg = fig["dwg"]
 
-    start_xy = _ax2dwg([0, 0], fig=fig, ax=ax)
-    stop_xy = _ax2dwg([1, 1], fig=fig, ax=ax)
+    start_xy = _ax2dwg([span[0], span[1]], fig=fig, ax=ax)
+    _x_stop = span[0] + span[2]
+    _y_stop = span[1] + span[3]
+
+    stop_xy = _ax2dwg([_x_stop, _y_stop], fig=fig, ax=ax)
 
     range_x = stop_xy[0] - start_xy[0]
     range_y = stop_xy[1] - start_xy[1]
 
     dwg.add(
         dwg.image(
-            href="data:image/png;base64," + mat64_str,
+            href=href,
             width="{:f}".format(range_x),
             height="{:f}".format(range_y),
             x="{:f}".format(start_xy[0]),

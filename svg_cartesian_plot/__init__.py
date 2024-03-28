@@ -6,6 +6,8 @@ from .base import ax_add_path
 from .base import ax_add_text
 from .base import fig_write
 from .base import ax_add_pcolormesh
+from .base import ax_embed_image_from_raw
+from .base import ax_link_image
 from . import optics
 from . import shapes
 from . import hemisphere
