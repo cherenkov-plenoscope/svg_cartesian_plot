@@ -21,6 +21,14 @@ def scientific(
     return out
 
 
+def thinspace():
+    return "\u2009"
+
+
+def mu():
+    return "\u03BC"
+
+
 def superscript(v):
     m = {
         "-": "\u207B",
@@ -48,3 +56,7 @@ def dot():
 
 def circ():
     return "\u00B0"
+
+
+def gamma():
+    return "\u03B3"

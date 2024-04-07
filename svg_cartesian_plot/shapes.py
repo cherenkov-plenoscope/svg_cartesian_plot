@@ -9,6 +9,21 @@ def ax_add_circle(
     fn=101,
     **kwargs,
 ):
+    pxy = []
+    for phi in np.linspace(0, 2 * np.pi, fn, endpoint=False):
+        px = xy[0] + np.cos(phi) * radius
+        py = xy[1] + np.sin(phi) * radius
+        pxy.append([px, py])
+    splt.ax_add_path(ax=ax, xy=pxy, **kwargs)
+
+
+def _ax_add_circle(
+    ax,
+    xy,
+    radius,
+    fn=101,
+    **kwargs,
+):
     phis = np.linspace(0, 2 * np.pi, fn)
     for i in range(fn - 1):
         start = radius * np.array([np.cos(phis[i]), np.sin(phis[i])])
@@ -22,7 +37,7 @@ def ax_add_hemisphere_grid(
     for zd_deg in np.arange(
         zenith_step_deg, 90 + zenith_step_deg, zenith_step_deg
     ):
-        ax_add_circle(
+        _ax_add_circle(
             ax=ax,
             xy=[0, 0],
             radius=radius * np.sin(np.deg2rad(zd_deg)),
