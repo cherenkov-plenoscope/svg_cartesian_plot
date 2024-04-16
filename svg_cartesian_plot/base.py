@@ -124,13 +124,19 @@ def ax_add_pcolormesh(
         for ybin in range(num_y):
             mat[xbin, num_y - ybin - 1] = colormap(z[xbin, ybin])
 
-    ax_embed_image_from_raw(ax=ax, raw_image_rgb=mat)
+    span = (
+        min(x_bin_edges),
+        min(y_bin_edges),
+        max(x_bin_edges) - min(x_bin_edges),
+        max(y_bin_edges) - min(y_bin_edges),
+    )
+    ax_embed_image_from_raw(ax=ax, raw_image_rgb=mat, span=span)
 
 
-def ax_embed_image_from_raw(ax, raw_image_rgb):
+def ax_embed_image_from_raw(ax, raw_image_rgb, span=(0, 0, 1, 1)):
     mat64_str = image.image_to_png_base64(mat=raw_image_rgb)
     href = "data:image/png;base64," + mat64_str
-    ax_link_image(ax=ax, href=href)
+    ax_link_image(ax=ax, href=href, span=span)
 
 
 def ax_link_image(ax, href, span=(0, 0, 1, 1)):
