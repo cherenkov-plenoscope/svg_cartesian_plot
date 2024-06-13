@@ -23,6 +23,9 @@ setuptools.setup(
     url="https://github.com/cherenkov-plenoscope/svg_cartesian_plot",
     packages=[
         "svg_cartesian_plot",
+        "svg_cartesian_plot.text",
+        "svg_cartesian_plot.color",
+        "svg_cartesian_plot.image",
     ],
     package_data={"svg_cartesian_plot": []},
     install_requires=["svgwrite"],

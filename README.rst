@@ -1,7 +1,7 @@
 ##################
 svg-cartesian-plot
 ##################
-|TestStatus| |PyPiStatus| |BlackStyle| |PackStyleBlack| |LicenseBadge|
+|TestStatus| |PyPiStatus| |BlackStyle| |BlackPackStyle| |LicenseBadge|
 
 Make plots in scaleable-vector-graphics (svg).
 Create plots and graphics that you can modify further in e.g. inkscape.
@@ -20,7 +20,7 @@ Create plots and graphics that you can modify further in e.g. inkscape.
 .. |PyPiStatus| image:: https://img.shields.io/pypi/v/svg_cartesian_plot
     :target: https://pypi.org/project/svg_cartesian_plot
 
-.. |PackStyleBlack| image:: https://img.shields.io/badge/pack%20style-black-000000.svg
+.. |BlackPackStyle| image:: https://img.shields.io/badge/pack%20style-black-000000.svg
     :target: https://github.com/cherenkov-plenoscope/black_pack
 
 .. |LicenseBadge| image:: https://img.shields.io/badge/License-MIT-yellow.svg
