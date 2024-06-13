@@ -28,7 +28,10 @@ setuptools.setup(
         "svg_cartesian_plot.image",
     ],
     package_data={"svg_cartesian_plot": []},
-    install_requires=["svgwrite"],
+    install_requires=[
+        "svgwrite>=1.4.3",
+        "pillow>=10.2.0",
+    ],
     classifiers=[
         "Natural Language :: English",
         "Programming Language :: Python :: 3",
