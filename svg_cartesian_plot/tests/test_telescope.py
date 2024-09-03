@@ -1,12 +1,24 @@
 import svg_cartesian_plot as splt
 import numpy as np
 
+DARKMODE = True
 
 COLOR_SENSOR = (192, 0, 0)
 COLOR_BEAM = (0, 128, 255)
 COLOR_WALLS = (0, 192, 0)
 
-FIG_RATIO = 0.8
+if DARKMODE:
+    STROKE = (255, 255, 255)
+    EXT = ".dark"
+    BEAM_OPACITY = 0.5
+    COLOR_LENS = (100, 200, 255)
+else:
+    STROKE = (0, 0, 0)
+    EXT = ""
+    BEAM_OPACITY = 0.2
+    COLOR_LENS = (50, 100, 255)
+
+FIG_RATIO = 1.0
 FIG_NUM_COLS = 1280
 
 MIRROR = {
@@ -26,8 +38,8 @@ SENSOR = {
 }
 
 AXSPAN = (0, 0, 1, 1)
-AX_XLIM = (-0.55, 0.55)
-AX_YLIM = (-0.05 / FIG_RATIO, 1.05 / FIG_RATIO)
+AX_XLIM = (-0.75, 0.75)
+AX_YLIM = (-0.05, 1.45)
 
 
 def ax_add_scope(
@@ -68,7 +80,7 @@ def ax_add_scope(
                     mirror_x=tPaxel,
                     mirror_config=mirror,
                     fill=COLOR_BEAM,
-                    fill_opacity=0.2,
+                    fill_opacity=BEAM_OPACITY,
                     show_beam_scenery_to_mirror=True,
                     show_beam_mirror_to_sensor_plane=True,
                     show_beam_lens_to_photosensor=show_lenses,
@@ -105,9 +117,9 @@ def ax_add_scope(
                 ax=ax,
                 img_x=tPixel,
                 img_distance=img_d,
-                fill=(50, 100, 255),
+                fill=COLOR_LENS,
                 fill_opacity=0.5,
-                stroke=(0, 0, 0),
+                stroke=STROKE,
                 stroke_width=2.5,
                 stroke_opacity=1.0,
             )
@@ -119,51 +131,68 @@ def ax_add_scope(
                 photosensor_height=mF * 0.05,
                 fill=COLOR_SENSOR,
                 fill_opacity=1.0,
+                stroke=STROKE,
             )
 
     splt.optics.ax_add_mirror(
         ax=ax,
         mirror_config=MIRROR,
         stroke_width=10,
-        stroke=(0, 0, 0),
+        stroke=STROKE,
         fill=None,
     )
 
 
-BEAM = [3, 1]
-for deformation in [0.0, MIRROR["focal_length"] * 0.01]:
-    MIRROR["deformation"]["amplitude"] = deformation
+DEFORMATIONS = {
+    "default": 0.0,
+    "perlin55mm": MIRROR["focal_length"] * 0.01,
+}
+
+
+BEAM = [3, 0]
+for deformation in DEFORMATIONS:
+    MIRROR["deformation"]["amplitude"] = DEFORMATIONS[deformation]
 
     for num_paxel in [5, 1]:
         SENSOR["num_paxel"] = num_paxel
 
-        fig = splt.Fig(cols=FIG_NUM_COLS, rows=int(FIG_NUM_COLS / FIG_RATIO))
-        ax = splt.Ax(fig)
-        ax["span"] = AXSPAN
-        ax["xlim"] = AX_XLIM
-        ax["ylim"] = AX_YLIM
+        beams_to_show = []
+        beams_to_show.append(([], [], ""))
+        for pix in range(SENSOR["num_pixel"]):
+            for pax in range(SENSOR["num_paxel"]):
+                beams_to_show.append(([pix], [pax], f"{pix:02d}-{pax:02d}"))
 
-        ax_add_scope(
-            mirror=MIRROR,
-            sensor=SENSOR,
-            pixels=[BEAM[0]],
-            paxels=[BEAM[1]],
-        )
+        for beam_to_show in beams_to_show:
+            print(beam_to_show)
+            fig = splt.Fig(
+                cols=FIG_NUM_COLS, rows=int(FIG_NUM_COLS / FIG_RATIO)
+            )
+            ax = splt.Ax(fig)
+            ax["span"] = AXSPAN
+            ax["xlim"] = AX_XLIM
+            ax["ylim"] = AX_YLIM
 
-        splt.optics.ax_add_optical_axis(
-            ax=ax,
-            mirror_diameter=MIRROR["diameter"],
-            mirror_focal_length=MIRROR["focal_length"],
-            sensor_diameter=SENSOR["diameter"],
-            stroke_opacity=0.5,
-            stroke_width=2,
-            stroke=(0, 0, 0),
-            overhead=1.1,
-        )
+            ax_add_scope(
+                mirror=MIRROR,
+                sensor=SENSOR,
+                pixels=beam_to_show[0],
+                paxels=beam_to_show[1],
+            )
 
-        splt.fig_write(
-            fig=fig,
-            path="scope_{:d}-{:d}.svg".format(
-                num_paxel, int(100 * deformation)
-            ),
-        )
+            splt.optics.ax_add_optical_axis(
+                ax=ax,
+                mirror_diameter=MIRROR["diameter"],
+                mirror_focal_length=MIRROR["focal_length"],
+                sensor_diameter=SENSOR["diameter"],
+                stroke_opacity=0.5,
+                stroke_width=2,
+                stroke=STROKE,
+                overhead=1.1,
+            )
+
+            splt.fig_write(
+                fig=fig,
+                path="scope_P{:d}_{:s}_{:s}{:s}.svg".format(
+                    num_paxel, deformation, beam_to_show[2], EXT
+                ),
+            )
