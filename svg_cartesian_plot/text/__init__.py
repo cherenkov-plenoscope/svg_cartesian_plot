@@ -26,17 +26,17 @@ def thinspace():
 
 
 def mu():
-    return "\u03BC"
+    return "\u03bc"
 
 
 def superscript(v):
     m = {
-        "-": "\u207B",
-        "+": "\u207A",
+        "-": "\u207b",
+        "+": "\u207a",
         "0": "\u2070",
-        "1": "\u00B9",
-        "2": "\u00B2",
-        "3": "\u00B3",
+        "1": "\u00b9",
+        "2": "\u00b2",
+        "3": "\u00b3",
         "4": "\u2074",
         "5": "\u2075",
         "6": "\u2076",
@@ -51,12 +51,12 @@ def superscript(v):
 
 
 def dot():
-    return "\u00B7"
+    return "\u00b7"
 
 
 def circ():
-    return "\u00B0"
+    return "\u00b0"
 
 
 def gamma():
-    return "\u03B3"
+    return "\u03b3"
